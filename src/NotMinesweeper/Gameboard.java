@@ -12,6 +12,9 @@ public class Gameboard{
     private int width;
     private int height;
     private int mine_count;
+    private int tile_count;
+    private int flag_count;
+    private boolean lost;
     //private ArrayList<ArrayList<int>>; // for the coordinate list. Couldn't I just use the list of nodes, though?
 
 
@@ -19,15 +22,19 @@ public class Gameboard{
         this.width = width;
         this.height = height;
         this.mine_count = mine_count;
-        ArrayList < ArrayList<Node> > board = new ArrayList<ArrayList<Node> >(height);
+        ArrayList < ArrayList<Node> > board = new ArrayList<>(height);
         this.board = board;
+        this.lost = false;
+        this.tile_count = 0;
+        this.flag_count = this.mine_count;
+
         //this.coord_list =
 
         for (int ix = 0; ix < this.width; ix++) {
             // How many rows will there be? That's determined by the height variable.
 
             // Create a new row.
-            ArrayList<Node> row = new ArrayList<Node>();
+            ArrayList<Node> row = new ArrayList<>();
             for (int iy = 0; iy < this.height; iy++) {
                 // What's going to be in each column?
                 Node current = new Node(ix, iy);
@@ -49,23 +56,48 @@ public class Gameboard{
     }
 
     public void PrintBoard() {
+        int ylabel = 0;
+        String header = " ";
+        for (int xlabel = 0; xlabel < this.width; xlabel++) {
+            header += " _ "+xlabel;
+        }
+         System.out.println(header);
+
+        // This takes care of counting the number of unhidden tiles.
+        this.tile_count = this.width*this.height;
+
         for (int ix = 0; ix < this.width; ix++) {
-            String row = "";
+            String row = ylabel+" | ";
             for (int iy = 0; iy < this.height; iy++) {
                 Node curr = this.board.get(ix).get(iy);
                 String symbol = curr.value;
-                if (curr.hidden) {
+
+                if (curr.flagged) {
+                    symbol = "F";
+
+                    // Since this has been identified as a "flag", it isn't hidden, so we can subtract one.
+                    this.tile_count -= 1;
+                }
+                else if (curr.hidden) {
                     symbol = "-";
                 }
+                else if (curr.value.equals("0")){
+                    symbol = " ";
+
+                    // Since this has been identified as a normal space, we can subtract one.
+                    this.tile_count -=1;
+                }
                 else {
-                    symbol = curr.value;
+                    this.tile_count -=1;
                 }
                 row +=symbol+"   ";
             }
             System.out.println(row);
+            ylabel+=1;
         }
-        System.out.println("");
-
+        System.out.println();
+        System.out.println(this.flag_count+"/"+this.mine_count+" mines left");
+        System.out.println(this.tile_count+" tiles left");
     }
 
 
@@ -97,7 +129,7 @@ public class Gameboard{
 
     }
     private void SetCount(Node curr) {
-        if (curr.value != "X") {
+        if (!curr.value.equals("X")) {
             int x = curr.x;
             int y = curr.y;
             int n = 0;
@@ -112,14 +144,15 @@ public class Gameboard{
             // up right: x+1, y-1
 
             // Since there could be an array out of bounds error, putting each statement should fix it
-            try {if (this.board.get(x).get(y-1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e1) {}
-            try {if (this.board.get(x-1).get(y-1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e2) {}
-            try {if (this.board.get(x-1).get(y).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e3) {}
-            try {if (this.board.get(x-1).get(y+1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e4) {}
-            try {if (this.board.get(x).get(y+1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e5) {}
-            try {if (this.board.get(x+1).get(y+1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e6) {}
-            try {if (this.board.get(x+1).get(y).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e7) {}
-            try {if (this.board.get(x+1).get(y-1).value=="X") {n+=1;}} catch (IndexOutOfBoundsException e8) {}
+            try {if (this.board.get(x).get(y-1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e1) {}
+            try {if (this.board.get(x-1).get(y-1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e2) {}
+            try {if (this.board.get(x-1).get(y).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e3) {}
+            try {if (this.board.get(x-1).get(y+1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e4) {}
+            try {if (this.board.get(x).get(y+1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e5) {}
+            try {if (this.board.get(x+1).get(y+1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e6) {}
+            try {if (this.board.get(x+1).get(y).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e7) {}
+            try {if (this.board.get(x+1).get(y-1).value.equals("X")) {n+=1;}} catch (IndexOutOfBoundsException e8) {}
+
 
             curr.value = Integer.toString(n);
 
@@ -129,39 +162,98 @@ public class Gameboard{
     public void Reveal(int x, int y) {
 
         Node curr = this.board.get(x).get(y);
-        if (curr.hidden == true) {
-            if (!(curr.value.equals("X"))) {
-                // Let's test it to see if we can reveal more around it in this recursive entry
-                CascadingReveal(curr);
+        // Check if this tile is flagged or hidden. If revealed or flagged, ignore the "press".
+        if (!curr.flagged) {
+            if (curr.hidden) {
+                if (!(curr.value.equals("X"))) {
+                    // Let's test it to see if we can reveal more around it in this recursive entry
+                    CascadingReveal(curr);
+                }
+                else {
+                    // If the player just revealed a mine... game over!
+                    this.lost = true;
+                }
             }
         }
     }
     private void CascadingReveal(Node curr) {
-        // Has this node been revealed yet? If not, let's test around it
-        if (curr.hidden) {
-            curr.hidden = false;
-            if (curr.value.equals("0")) {
-                // There's no mine here, no numbers, nothing
-                // AKA if this is empty, test to see if we can reveal any adjacent tiles.
-                // Otherwise, the party ends here.
-                int x = curr.x;
-                int y = curr.y;
-                try {
-                    CascadingReveal(this.board.get(x).get(y + 1));
-                } catch (IndexOutOfBoundsException e1) {
-                } // test up
-                try {
-                    CascadingReveal(this.board.get(x).get(y - 1));
-                } catch (IndexOutOfBoundsException e2) {
-                } // test down
-                try {
-                    CascadingReveal(this.board.get(x - 1).get(y));
-                } catch (IndexOutOfBoundsException e3) {
-                } // test left
-                try {
-                    CascadingReveal(this.board.get(x + 1).get(y));
-                } catch (IndexOutOfBoundsException e4) {
-                } // test right
+        // Has this node been revealed yet, or is it flagged? If not, let's test around it
+        if (!curr.flagged) {
+            if (curr.hidden) {
+                curr.hidden = false;
+                if (curr.value.equals("0")) {
+                    // There's no mine here, no numbers, nothing
+                    // AKA if this is empty, test to see if we can reveal any adjacent tiles.
+                    // Otherwise, the party ends here.
+                    int x = curr.x;
+                    int y = curr.y;
+                    try {
+                        CascadingReveal(this.board.get(x).get(y + 1));
+                    } catch (IndexOutOfBoundsException e1) {
+                    } // test up
+
+                    try {
+                        CascadingReveal(this.board.get(x-1).get(y + 1));
+                    } catch (IndexOutOfBoundsException e1) {
+                    } // test up left
+                    try {
+                        CascadingReveal(this.board.get(x+1).get(y + 1));
+                    } catch (IndexOutOfBoundsException e1) {
+                    } // test up right
+
+                    try {
+                        CascadingReveal(this.board.get(x).get(y - 1));
+                    } catch (IndexOutOfBoundsException e2) {
+                    } // test down
+                    try {
+                        CascadingReveal(this.board.get(x-1).get(y - 1));
+                    } catch (IndexOutOfBoundsException e2) {
+                    } // test down left
+                    try {
+                        CascadingReveal(this.board.get(x+1).get(y - 1));
+                    } catch (IndexOutOfBoundsException e2) {
+                    } // test down right
+
+                    try {
+                        CascadingReveal(this.board.get(x - 1).get(y));
+                    } catch (IndexOutOfBoundsException e3) {
+                    } // test left
+                    try {
+                        CascadingReveal(this.board.get(x + 1).get(y));
+                    } catch (IndexOutOfBoundsException e4) {
+                    } // test right
+                }
+            }
+        }
+    }
+
+    public void SetFlag(int x, int y) {
+        Node curr = this.board.get(x).get(y);
+        // We only want to flag hidden flags
+            if (curr.hidden) {
+                curr.flagged = true;
+                this.flag_count -= 1;
+            }
+    }
+    public void RemoveFlag(int x, int y) {
+        Node curr = this.board.get(x).get(y);
+        curr.flagged = false;
+        this.flag_count += 1;
+    }
+
+    public void CheckWin() {
+        // Checks if all of the mines have been flagged, and if all non-flagged spaces have been revealed.
+        // Also checks if the player landed on a mine during this turn.
+        if (this.lost) {
+            System.out.println("Kaboom! Sorry, you blew up.");
+            System.exit(0);
+        }
+        else {
+            if (this.tile_count == 0) {
+                if (this.flag_count ==0) {
+                    System.out.println("You found them all, congrats!");
+                    System.exit(0);
+                }
             }
         }
     }

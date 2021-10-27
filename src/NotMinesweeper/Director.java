@@ -1,4 +1,5 @@
 package NotMinesweeper;
+import java.util.Scanner;
 
 public class Director {
     // Things that I need to do:
@@ -10,12 +11,39 @@ public class Director {
     */
     public static void main(String[] args) {
         System.out.println("Hallo Warudo");
-        Gameboard board = new Gameboard(10,10, 10);
+        Gameboard board = new Gameboard(10,10, 1);
         //board.DebugBoard();
         board.PrintBoard(); // This prints out the board in an un-initialized state, AKA cheating mode
         board.PopulateCount();
-        board.PrintBoard();
-        board.Reveal(4,4);
-        board.PrintBoard();
+        //board.PrintBoard();
+        //board.Reveal(4,4);
+        //board.PrintBoard();
+
+        String inputStr;
+        String command;
+        // If no coordinates are provided, then the game defaults to 0,0 or whatever was last used.
+        int inputX = 0;
+        int inputY = 0;
+        Scanner scan = new Scanner(System.in);
+        while (true) {
+            board.PrintBoard();
+            board.CheckWin();
+            inputStr = scan.nextLine();
+            String[] inputArray = inputStr.split(" ");
+            if (inputArray.length == 3) {
+                inputX = Integer.parseInt(inputArray[2]);
+                inputY = Integer.parseInt(inputArray[1]);
+
+            }
+            command = inputArray[0];
+
+            switch (command) {
+                case "flag" -> board.SetFlag(inputX, inputY);
+                case "click" -> board.Reveal(inputX, inputY);
+                case "remove" -> board.RemoveFlag(inputX, inputY);
+                case "quit" -> System.exit(0);
+            }
+            }
+
     }
 }
