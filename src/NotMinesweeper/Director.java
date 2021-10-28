@@ -10,11 +10,9 @@ public class Director {
        need to call the class Main.
     */
     public static void main(String[] args) {
-        System.out.println("Hallo Warudo");
-        Gameboard board = new Gameboard(10,10, 1);
+        Gameboard board = new Gameboard(10,10, 10);
         //board.DebugBoard();
-        board.PrintBoard(); // This prints out the board in an un-initialized state, AKA cheating mode
-        board.PopulateCount();
+        //board.PrintBoard(); // This prints out the board in an un-initialized state, AKA cheating mode
         //board.PrintBoard();
         //board.Reveal(4,4);
         //board.PrintBoard();

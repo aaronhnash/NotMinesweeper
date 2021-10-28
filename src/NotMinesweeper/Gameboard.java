@@ -1,7 +1,7 @@
 package NotMinesweeper;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
+
 
 public class Gameboard{
 
@@ -15,6 +15,8 @@ public class Gameboard{
     private int tile_count;
     private int flag_count;
     private boolean lost;
+    private Random random;
+    private int[][] coordArray;
     //private ArrayList<ArrayList<int>>; // for the coordinate list. Couldn't I just use the list of nodes, though?
 
 
@@ -27,12 +29,17 @@ public class Gameboard{
         this.lost = false;
         this.tile_count = 0;
         this.flag_count = this.mine_count;
+        this.random = new Random();
+        this.coordArray = new int[this.width*this.height][2];
 
-        //this.coord_list =
+        System.out.println(this.coordArray.length);
+
+        //int[][] coordArray = new int[width*height][2];
+        int count = 0;
+
 
         for (int ix = 0; ix < this.width; ix++) {
             // How many rows will there be? That's determined by the height variable.
-
             // Create a new row.
             ArrayList<Node> row = new ArrayList<>();
             for (int iy = 0; iy < this.height; iy++) {
@@ -40,10 +47,17 @@ public class Gameboard{
                 Node current = new Node(ix, iy);
                 //System.out.println("New node at: " +current.x +" , "+current.y);
                 row.add(current);
+
+                // Also build a list full of coordinates, used when placing mines.
+                this.coordArray[count][0] = ix;
+                this.coordArray[count][1] = iy;
+                count += 1;
+
             }
             this.board.add(row);
         }
         AddMines(this.mine_count);
+        PopulateCount();
     }
 
     public void DebugBoard() {
@@ -108,16 +122,26 @@ public class Gameboard{
         remove that entry from the list.
         */
         // Basic function to add mines.
-        // TODO: enhance mine placing function, since some mines could overlap right now.
-        Random random = new Random();
 
+        // Takes the list of coordinate points and
+        List<int[]> coordList = Arrays.asList(this.coordArray);
+        Collections.shuffle(coordList);
         for (int n = 0; n < count; n++) {
-            int new_x = random.nextInt(width);
-            int new_y = random.nextInt(height);
-            this.board.get(new_x).get(new_y).value = "X";
+            int[] point;
+            point = coordList.get(n);
+            this.board.get(point[0]).get(point[1]).value = "X";
         }
     }
-    public void PopulateCount() {
+
+    private void RollMine() {
+        int new_x = random.nextInt(this.width);
+        int new_y = random.nextInt(this.height);
+        Node curr = this.board.get(new_x).get(new_y);
+        if (curr.value.equals("X")) {RollMine();} // if there's already a mine, try again
+        else {curr.value = "X";}
+    }
+
+    private void PopulateCount() {
 
         for (int ix = 0; ix < this.width; ix++) {
             for (int iy = 0; iy < this.height; iy++) {
