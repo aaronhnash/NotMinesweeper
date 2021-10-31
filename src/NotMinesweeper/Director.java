@@ -1,16 +1,24 @@
 package NotMinesweeper;
 import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+//import java.awt.event.*;
 
 public class Director {
-    // Things that I need to do:
-    // Each point will be an object, linked to what's around it (like a linked
 
-    /* In REPL, it will look for the main function
-       in a class called Main.  In other tools, you don't
-       need to call the class Main.
-    */
     public static void main(String[] args) {
-        Gameboard board = new Gameboard(10,10, 10);
+        /*
+        JFrame frame = new JFrame("NotMinesweeper");
+        JLabel emptyLabel = new JLabel(("1"));
+        //emptyLabel.setPreferredSize(new Dimension(175, 100));
+        frame.getContentPane().add(emptyLabel, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+        frame.getContentPane().add(new JLabel(("2")), BorderLayout.CENTER);
+        */
+
+
+        Gameboard board = new Gameboard(10,10, 15);
         //board.DebugBoard();
         //board.PrintBoard(); // This prints out the board in an un-initialized state, AKA cheating mode
         //board.PrintBoard();
@@ -29,8 +37,8 @@ public class Director {
             inputStr = scan.nextLine();
             String[] inputArray = inputStr.split(" ");
             if (inputArray.length == 3) {
-                inputX = Integer.parseInt(inputArray[2]);
-                inputY = Integer.parseInt(inputArray[1]);
+                inputX = Integer.parseInt(inputArray[1]);
+                inputY = Integer.parseInt(inputArray[2]);
 
             }
             command = inputArray[0];

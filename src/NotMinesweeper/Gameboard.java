@@ -80,9 +80,9 @@ public class Gameboard{
         // This takes care of counting the number of unhidden tiles.
         this.tile_count = this.width*this.height;
 
-        for (int ix = 0; ix < this.width; ix++) {
+        for (int iy = 0; iy < this.height; iy++) {
             String row = ylabel+" | ";
-            for (int iy = 0; iy < this.height; iy++) {
+            for (int ix = 0; ix < this.width; ix++) {
                 Node curr = this.board.get(ix).get(iy);
                 String symbol = curr.value;
 
@@ -261,8 +261,10 @@ public class Gameboard{
     }
     public void RemoveFlag(int x, int y) {
         Node curr = this.board.get(x).get(y);
-        curr.flagged = false;
-        this.flag_count += 1;
+        if (curr.flagged) {
+            curr.flagged = false;
+            this.flag_count += 1;
+        }
     }
 
     public void CheckWin() {
