@@ -1,32 +1,29 @@
 # Overview
 
-{Important!  Do not say in this section that this is college assignment.  Talk about what you are trying to accomplish as a software engineer to further your learning.}
+This is my attempt at learning Java! Which, I might add, went quite swimmingly. For this project, I wanted to expand my knowledge of programming languages, and what better way to learn than to do something you don't know how to do?
 
-{Provide a description the software that you wrote to demonstrate the Java language.}
+Being based off of Minesweeper, NotMinesweeper demonstrates the usage of data structures and classes. At its basic level, the board is comprised of nodes, which are stored in a list of lists. This lets me loop through the board and reference surrounding nodes while revealing and "populating" the count for each node.
 
-{Describe your purpose for writing this software.}
+Having played enough Minesweeper to understand the logic behind the game, I decided that it would make for a worthwhile project to recreate one of my favorite timewasters in Java!
 
-{Provide a link to your YouTube demonstration.  It should be a 4-5 minute demo of the software running and a walkthrough of the code.  Focus should be on sharing what you learned about the language syntax.}
+Usually I like to keep my videos short-ish, but I guess I got... *swept* away on this one!
 
-[Software Demo Video](http://youtube.link.goes.here)
+[NotMinesweeper Demo](https://youtu.be/iXkSY7mJBbA)
 
 # Development Environment
 
-{Describe the tools that you used to develop the software}
-
-{Describe the programming language that you used and any libraries.}
-
+NotMinsweeper was developed using the Intellij IDEA CE environment, entirely in Java, using built-in Java libraries. 
 # Useful Websites
 
-{Make a list of websites that you found helpful in this project}
-* [Web Site Name](http://url.link.goes.here)
-* [Web Site Name](http://url.link.goes.here)
-* https://stackoverflow.com/questions/8436306/java-ignore-exception-and-continue
-  https://www.javatpoint.com/how-to-generate-random-number-in-java
+While these are specific articles that helped me during this project, I used even more articles from these websites to help me learn and understand the important concepts.
+* [Stack Overflow--Ignoring a try statement if there's an exception](https://stackoverflow.com/questions/8436306/java-ignore-exception-and-continue)
+* [Java T Point--Shuffling a list](https://www.javatpoint.com/java-collections-shuffle-method)
+* [Oracle Official Documentation--Switch Syntax](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html)
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-* Item 1
-* Item 2
-* Item 3
+Housekeeping and future features!
+* Enable restarting the game instead of exiting after a loss
+* Collect user input to determine board size
+* Add a GUI in place of a text-based terminal
+* Add an on-screen timer
